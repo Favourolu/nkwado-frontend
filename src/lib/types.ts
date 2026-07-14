@@ -73,3 +73,18 @@ export const VendorCategory = {
   PLANNER: "PLANNER",
 } as const;
 export type VendorCategory = (typeof VendorCategory)[keyof typeof VendorCategory];
+
+export const VENDOR_CATEGORY_LABELS: Record<VendorCategory, string> = {
+  CATERING: "Catering",
+  VENUE: "Venue",
+  DJ: "DJ",
+  LIVE_BAND: "Live Band",
+  DRESSES: "Dresses",
+  SUITS: "Suits",
+  DECORATION: "Decoration",
+  PHOTOGRAPHY: "Photography",
+  VIDEOGRAPHY: "Videography",
+  TRANSPORTATION: "Transportation",
+  FLORIST: "Florist",
+  PLANNER: "Planner",
+};
