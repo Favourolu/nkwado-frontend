@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/lib/auth-api";
+import { getErrorMessage } from "@/lib/get-error-message";
 import { dashboardPathForRole, useAuth } from "@/lib/use-auth";
 
 const loginSchema = z.object({
@@ -41,8 +42,8 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       router.push(dashboardPathForRole(data.user.role));
     },
-    onError: () => {
-      toast.error("Invalid email or password");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Invalid email or password"));
     },
   });
 

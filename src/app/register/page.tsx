@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { register as registerRequest } from "@/lib/auth-api";
+import { getErrorMessage } from "@/lib/get-error-message";
 import { dashboardPathForRole, useAuth } from "@/lib/use-auth";
 
 const registerSchema = z.object({
@@ -57,8 +58,8 @@ export default function RegisterPage() {
       toast.success("Account created!");
       router.push(dashboardPathForRole(data.user.role));
     },
-    onError: () => {
-      toast.error("Registration failed. Please check your details.");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Registration failed. Please check your details."));
     },
   });
 
