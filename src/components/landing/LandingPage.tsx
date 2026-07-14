@@ -268,7 +268,7 @@ export function LandingPage() {
 
           <div className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/5 to-primary/10 p-8">
             <div className="flex h-full min-h-[320px] items-center justify-center">
-              <PeacockMark className="h-40 w-40" />
+              <PeacockMark className="h-40 w-40" animated />
             </div>
             {FLOATING_BADGES.map((badge, i) => (
               <div
