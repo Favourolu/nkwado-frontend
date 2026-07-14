@@ -44,6 +44,7 @@ const CATEGORY_CARDS: {
   title: string;
   subtitle: string;
   gradient: string;
+  image: string;
   icon: typeof UtensilsCrossed;
   size?: "sm" | "lg";
 }[] = [
@@ -51,6 +52,7 @@ const CATEGORY_CARDS: {
     title: "Catering",
     subtitle: "Buffet, plated, or small chops",
     gradient: "bg-gradient-to-br from-amber-600 to-amber-400",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=70&auto=format&fit=crop",
     icon: UtensilsCrossed,
     size: "lg",
   },
@@ -58,16 +60,59 @@ const CATEGORY_CARDS: {
     title: "Venue",
     subtitle: "Halls, gardens, rooftops, hotels",
     gradient: "bg-gradient-to-br from-teal-700 to-teal-400",
+    image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900&q=70&auto=format&fit=crop",
     icon: Warehouse,
     size: "lg",
   },
-  { title: "DJ", subtitle: "Sets the mood", gradient: "bg-gradient-to-br from-violet-700 to-violet-400", icon: Music2 },
-  { title: "Live Band", subtitle: "Live entertainment", gradient: "bg-gradient-to-br from-fuchsia-700 to-fuchsia-400", icon: Music2 },
-  { title: "Photography", subtitle: "Every moment, captured", gradient: "bg-gradient-to-br from-blue-800 to-blue-500", icon: Camera },
-  { title: "Videography", subtitle: "Cinematic highlight reels", gradient: "bg-gradient-to-br from-cyan-700 to-cyan-400", icon: Camera },
-  { title: "Decoration", subtitle: "Your theme, brought to life", gradient: "bg-gradient-to-br from-emerald-700 to-emerald-400", icon: Sparkles },
-  { title: "Florist", subtitle: "Fresh arrangements", gradient: "bg-gradient-to-br from-rose-700 to-rose-400", icon: Flower2 },
-  { title: "Planner", subtitle: "Full-service coordination", gradient: "bg-gradient-to-br from-indigo-700 to-indigo-400", icon: CalendarCheck },
+  {
+    title: "DJ",
+    subtitle: "Sets the mood",
+    gradient: "bg-gradient-to-br from-violet-700 to-violet-400",
+    image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=600&q=70&auto=format&fit=crop",
+    icon: Music2,
+  },
+  {
+    title: "Live Band",
+    subtitle: "Live entertainment",
+    gradient: "bg-gradient-to-br from-fuchsia-700 to-fuchsia-400",
+    image: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&q=70&auto=format&fit=crop",
+    icon: Music2,
+  },
+  {
+    title: "Photography",
+    subtitle: "Every moment, captured",
+    gradient: "bg-gradient-to-br from-blue-800 to-blue-500",
+    image: "https://images.unsplash.com/photo-1554080353-a576cf803bda?w=600&q=70&auto=format&fit=crop",
+    icon: Camera,
+  },
+  {
+    title: "Videography",
+    subtitle: "Cinematic highlight reels",
+    gradient: "bg-gradient-to-br from-cyan-700 to-cyan-400",
+    image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&q=70&auto=format&fit=crop",
+    icon: Camera,
+  },
+  {
+    title: "Decoration",
+    subtitle: "Your theme, brought to life",
+    gradient: "bg-gradient-to-br from-emerald-700 to-emerald-400",
+    image: "https://images.unsplash.com/photo-1478146059778-26028b07395a?w=600&q=70&auto=format&fit=crop",
+    icon: Sparkles,
+  },
+  {
+    title: "Florist",
+    subtitle: "Fresh arrangements",
+    gradient: "bg-gradient-to-br from-rose-700 to-rose-400",
+    image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&q=70&auto=format&fit=crop",
+    icon: Flower2,
+  },
+  {
+    title: "Planner",
+    subtitle: "Full-service coordination",
+    gradient: "bg-gradient-to-br from-indigo-700 to-indigo-400",
+    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=70&auto=format&fit=crop",
+    icon: CalendarCheck,
+  },
 ];
 
 const FEATURES = [
