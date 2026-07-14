@@ -93,6 +93,7 @@ export async function getQuotes(requestId: string) {
 
 export interface Booking {
   id: string;
+  requestId?: string;
   eventType: EventType;
   eventDate?: string | null;
   totalAmount: number;
@@ -115,4 +116,26 @@ export async function createBooking(requestId: string, selectedQuoteIds: string[
 export async function getBookings() {
   const { data } = await apiClient.get<{ bookings: Booking[] }>("/customers/bookings");
   return data.bookings;
+}
+
+export type ProgressStepStatus = "completed" | "in_progress" | "pending";
+
+export interface ProgressStep {
+  name: string;
+  status: ProgressStepStatus;
+  date: string | null;
+}
+
+export interface Progress {
+  stage: string;
+  completed: string[];
+  pending: string[];
+  steps: ProgressStep[];
+}
+
+export async function getProgress(requestId: string) {
+  const { data } = await apiClient.get<{ progress: Progress }>(
+    `/customers/progress/${requestId}`
+  );
+  return data.progress;
 }

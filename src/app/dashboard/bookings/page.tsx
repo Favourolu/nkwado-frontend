@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getBookings } from "@/lib/customer-api";
@@ -68,6 +69,14 @@ export default function BookingsListPage() {
                 <p className="text-sm text-muted-foreground">
                   {booking.selectedVendors.map((v) => v.businessName).join(", ")}
                 </p>
+                {booking.requestId && (
+                  <Link
+                    href={`/dashboard/progress/${booking.requestId}`}
+                    className="inline-block text-sm underline underline-offset-4"
+                  >
+                    View progress
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ))}
