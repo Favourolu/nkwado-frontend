@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { login } from "@/lib/auth-api";
 import { getErrorMessage } from "@/lib/get-error-message";
 import { dashboardPathForRole, useAuth } from "@/lib/use-auth";
@@ -48,7 +49,10 @@ export default function LoginPage() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-muted/40 px-4">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Log in to Nkwado</CardTitle>

@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { register as registerRequest } from "@/lib/auth-api";
 import { getErrorMessage } from "@/lib/get-error-message";
 import { dashboardPathForRole, useAuth } from "@/lib/use-auth";
@@ -64,7 +65,10 @@ export default function RegisterPage() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-8">
+    <div className="relative flex min-h-screen items-center justify-center bg-muted/40 px-4 py-8">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>

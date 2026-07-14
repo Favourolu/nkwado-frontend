@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { PeacockMark } from "./PeacockMark";
 import { TiltCard } from "./TiltCard";
 import { EVENT_TYPE_LABELS } from "@/lib/types";
@@ -47,6 +48,7 @@ export function LandingPage() {
           <span className="text-lg font-semibold tracking-tight">Nkwado</span>
         </div>
         <nav className="flex items-center gap-3">
+          <ThemeToggle />
           <Button asChild variant="ghost">
             <Link href="/login">Log in</Link>
           </Button>

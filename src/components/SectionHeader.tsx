@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { PeacockMark } from "@/components/landing/PeacockMark";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -46,9 +47,12 @@ export function SectionHeader({ navItems }: { navItems: NavItem[] }) {
             </Link>
           ))}
         </nav>
-        <Button variant="ghost" size="sm" onClick={handleLogout}>
-          Log out
-        </Button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Button variant="ghost" size="sm" onClick={handleLogout}>
+            Log out
+          </Button>
+        </div>
       </div>
     </header>
   );
