@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDashboardMetrics } from "@/lib/admin-api";
@@ -28,25 +27,9 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">Admin dashboard</h1>
-          <p className="text-muted-foreground">Overview of the Nkwado marketplace.</p>
-        </div>
-        <nav className="flex gap-4 text-sm">
-          <Link href="/admin/vendors/pending" className="underline underline-offset-4">
-            Vendor vetting
-          </Link>
-          <Link href="/admin/requests" className="underline underline-offset-4">
-            Requests
-          </Link>
-          <Link href="/admin/bookings" className="underline underline-offset-4">
-            Bookings
-          </Link>
-          <Link href="/admin/revenue" className="underline underline-offset-4">
-            Revenue
-          </Link>
-        </nav>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold">Admin dashboard</h1>
+        <p className="text-muted-foreground">Overview of the Nkwado marketplace.</p>
       </div>
 
       {isLoading && <p className="text-muted-foreground">Loading...</p>}
