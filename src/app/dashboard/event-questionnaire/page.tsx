@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -39,6 +39,8 @@ const questionnaireSchema = z.object({
   eventType: z.enum(eventTypeValues, { error: "Select an event type" }),
   eventDate: z.string().optional(),
   eventTime: z.string().optional(),
+  customTimeFrom: z.string().optional(),
+  customTimeTo: z.string().optional(),
   guestCount: z.string().optional(),
   location: z.string().optional(),
   servicesNeeded: z.array(z.enum(vendorCategoryValues)).optional(),
@@ -65,6 +67,7 @@ const EVENT_TIME_OPTIONS = [
   { value: "MORNING", label: "Morning" },
   { value: "AFTERNOON", label: "Afternoon" },
   { value: "EVENING", label: "Evening" },
+  { value: "CUSTOM", label: "Custom time range" },
   { value: "NOT_SURE", label: "Not sure yet" },
 ];
 
@@ -129,7 +132,7 @@ const STEP_LABELS: Record<StepKey, string> = {
 };
 
 const STEP_FIELDS: Record<StepKey, (keyof QuestionnaireFormValues)[]> = {
-  basics: ["eventType", "eventDate", "eventTime", "guestCount", "location"],
+  basics: ["eventType", "eventDate", "eventTime", "customTimeFrom", "customTimeTo", "guestCount", "location"],
   services: ["servicesNeeded"],
   venue: ["hasVenue", "venueSetting", "venueStyle"],
   catering: ["cateringStyle", "dietaryRestrictions"],
@@ -190,15 +193,30 @@ export default function EventQuestionnairePage() {
     handleSubmit,
     trigger,
     setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<QuestionnaireFormValues>({
     resolver: zodResolver(questionnaireSchema),
     defaultValues: { servicesNeeded: [], entertainmentType: [] },
   });
 
-  const values = watch();
-  const servicesNeeded = useMemo(() => values.servicesNeeded ?? [], [values.servicesNeeded]);
+  // Only fields that drive conditional rendering / ToggleGroup selection state
+  // are watched reactively -- plain register()'d text/date/number inputs are
+  // uncontrolled and don't need to trigger a re-render on every keystroke
+  // (which was interrupting the native date picker popup).
+  const eventType = useWatch({ control, name: "eventType" });
+  const eventTime = useWatch({ control, name: "eventTime" });
+  const servicesNeededRaw = useWatch({ control, name: "servicesNeeded" });
+  const hasVenue = useWatch({ control, name: "hasVenue" });
+  const venueSetting = useWatch({ control, name: "venueSetting" });
+  const cateringStyle = useWatch({ control, name: "cateringStyle" });
+  const entertainmentTypeRaw = useWatch({ control, name: "entertainmentType" });
+  const photoVideoNeeds = useWatch({ control, name: "photoVideoNeeds" });
+  const budgetRange = useWatch({ control, name: "budgetRange" });
+  const priorities = useWatch({ control, name: "priorities" });
+
+  const servicesNeeded = useMemo(() => servicesNeededRaw ?? [], [servicesNeededRaw]);
+  const entertainmentType = useMemo(() => entertainmentTypeRaw ?? [], [entertainmentTypeRaw]);
 
   const activeSteps = useMemo<StepKey[]>(() => {
     const steps: StepKey[] = ["basics", "services"];
@@ -251,6 +269,8 @@ export default function EventQuestionnairePage() {
       specialRequirements: form.specialRequirements || undefined,
       questionnaire: {
         eventTime: form.eventTime || "",
+        customTimeFrom: form.customTimeFrom || "",
+        customTimeTo: form.customTimeTo || "",
         servicesNeeded: form.servicesNeeded ?? [],
         hasVenue: form.hasVenue || "",
         venueSetting: form.venueSetting || "",
@@ -285,7 +305,7 @@ export default function EventQuestionnairePage() {
                 <div className="space-y-2">
                   <Label>Event type</Label>
                   <Select
-                    value={values.eventType}
+                    value={eventType}
                     onValueChange={(value) => setValue("eventType", value as EventType)}
                   >
                     <SelectTrigger>
@@ -311,9 +331,25 @@ export default function EventQuestionnairePage() {
                   <Label>Time of day</Label>
                   <ToggleGroup
                     options={EVENT_TIME_OPTIONS}
-                    value={values.eventTime ? [values.eventTime] : []}
+                    value={eventTime ? [eventTime] : []}
                     onChange={(next) => setValue("eventTime", next[0] ?? "")}
                   />
+                  {eventTime === "CUSTOM" && (
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <div className="space-y-1">
+                        <Label htmlFor="customTimeFrom" className="text-xs text-muted-foreground">
+                          From
+                        </Label>
+                        <Input id="customTimeFrom" type="time" {...register("customTimeFrom")} />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="customTimeTo" className="text-xs text-muted-foreground">
+                          To
+                        </Label>
+                        <Input id="customTimeTo" type="time" {...register("customTimeTo")} />
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="guestCount">Guest count</Label>
@@ -347,7 +383,7 @@ export default function EventQuestionnairePage() {
                   <Label>Venue status</Label>
                   <ToggleGroup
                     options={VENUE_STATUS_OPTIONS}
-                    value={values.hasVenue ? [values.hasVenue] : []}
+                    value={hasVenue ? [hasVenue] : []}
                     onChange={(next) => setValue("hasVenue", next[0] ?? "")}
                   />
                 </div>
@@ -355,7 +391,7 @@ export default function EventQuestionnairePage() {
                   <Label>Indoor or outdoor?</Label>
                   <ToggleGroup
                     options={VENUE_SETTING_OPTIONS}
-                    value={values.venueSetting ? [values.venueSetting] : []}
+                    value={venueSetting ? [venueSetting] : []}
                     onChange={(next) => setValue("venueSetting", next[0] ?? "")}
                   />
                 </div>
@@ -376,7 +412,7 @@ export default function EventQuestionnairePage() {
                   <Label>Catering style</Label>
                   <ToggleGroup
                     options={CATERING_STYLE_OPTIONS}
-                    value={values.cateringStyle ? [values.cateringStyle] : []}
+                    value={cateringStyle ? [cateringStyle] : []}
                     onChange={(next) => setValue("cateringStyle", next[0] ?? "")}
                   />
                 </div>
@@ -395,7 +431,7 @@ export default function EventQuestionnairePage() {
                   <Label>What kind of entertainment do you want?</Label>
                   <ToggleGroup
                     options={ENTERTAINMENT_OPTIONS}
-                    value={values.entertainmentType ?? []}
+                    value={entertainmentType}
                     onChange={(next) => setValue("entertainmentType", next)}
                     multi
                   />
@@ -412,7 +448,7 @@ export default function EventQuestionnairePage() {
                 <Label>Photography, videography, or both?</Label>
                 <ToggleGroup
                   options={PHOTO_VIDEO_OPTIONS}
-                  value={values.photoVideoNeeds ? [values.photoVideoNeeds] : []}
+                  value={photoVideoNeeds ? [photoVideoNeeds] : []}
                   onChange={(next) => setValue("photoVideoNeeds", next[0] ?? "")}
                 />
               </div>
@@ -468,7 +504,7 @@ export default function EventQuestionnairePage() {
                       value,
                       label,
                     }))}
-                    value={values.budgetRange ? [values.budgetRange] : []}
+                    value={budgetRange ? [budgetRange] : []}
                     onChange={(next) => setValue("budgetRange", (next[0] ?? "") as BudgetRange)}
                   />
                   {errors.budgetRange && (
@@ -479,7 +515,7 @@ export default function EventQuestionnairePage() {
                   <Label>What matters most to you?</Label>
                   <ToggleGroup
                     options={PRIORITY_OPTIONS}
-                    value={values.priorities ? [values.priorities] : []}
+                    value={priorities ? [priorities] : []}
                     onChange={(next) => setValue("priorities", next[0] ?? "")}
                   />
                 </div>
