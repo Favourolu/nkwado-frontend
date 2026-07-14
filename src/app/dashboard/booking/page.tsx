@@ -108,7 +108,7 @@ function BookingReview() {
                 <span>{formatNaira(serviceCharge)}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Covers vendor vetting, quote coordination, and booking support — Nkwado
+                Covers vendor vetting, quote coordination, and booking support. Nkwado
                 doesn&apos;t charge vendors a listing fee, so this keeps the platform running.
               </p>
               <Separator />
