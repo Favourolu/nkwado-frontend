@@ -54,6 +54,10 @@ function Quotes() {
     queryKey: ["customer-quotes", requestId],
     queryFn: () => getQuotes(requestId as string),
     enabled: Boolean(requestId),
+    // Poll while any vendor hasn't responded yet, so quotes appear without
+    // the customer having to manually reload the page.
+    refetchInterval: (query) =>
+      (query.state.data ?? []).some((q) => q.status === "PENDING") ? 15000 : false,
   });
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -88,7 +92,9 @@ function Quotes() {
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">Review vendor quotes</h1>
         <p className="text-muted-foreground">
-          Select the quotes you&apos;d like to move forward with.
+          Select the quotes you&apos;d like to move forward with. Vendors have 24 hours to
+          respond so you get quotes fast — the countdown on each card shows how much time
+          that vendor has left.
         </p>
       </div>
 

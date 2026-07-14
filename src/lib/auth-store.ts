@@ -30,3 +30,14 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+// Keep auth in sync across tabs: if another tab logs in or out, this tab's
+// localStorage-backed state is re-read immediately instead of only catching
+// up the next time it makes an API call and gets a 401.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (event) => {
+    if (event.key === "nkwado-auth") {
+      useAuthStore.persist.rehydrate();
+    }
+  });
+}

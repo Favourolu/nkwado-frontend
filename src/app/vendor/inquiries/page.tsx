@@ -53,6 +53,9 @@ export default function VendorInquiriesPage() {
   const { data: inquiries, isLoading, isError } = useQuery({
     queryKey: ["vendor-inquiries"],
     queryFn: getInquiries,
+    // New inquiries can arrive at any time from matching; poll so vendors
+    // see them without a manual refresh.
+    refetchInterval: 15000,
   });
 
   const {

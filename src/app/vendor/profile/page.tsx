@@ -22,6 +22,9 @@ export default function VendorProfilePage() {
   const { data: vendor, isLoading, isError } = useQuery({
     queryKey: ["vendor-profile"],
     queryFn: getVendorProfile,
+    // Keep checking while the vendor is waiting on admin approval, so the
+    // status updates without a manual refresh once a decision is made.
+    refetchInterval: (query) => (query.state.data?.status === "PENDING" ? 15000 : false),
   });
 
   return (

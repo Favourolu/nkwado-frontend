@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { customizeRequest, getRequest, type MatchedVendor } from "@/lib/customer-api";
 import { formatNaira } from "@/lib/format";
+import { getErrorMessage } from "@/lib/get-error-message";
 import { BUDGET_RANGE_MAX } from "@/lib/types";
 
 export default function CustomizePage() {
@@ -58,8 +59,8 @@ function Customize() {
       toast.success("Selection saved");
       router.push(`/dashboard/quotes?requestId=${requestId}`);
     },
-    onError: () => {
-      toast.error("Couldn't save your selection. Please try again.");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Couldn't save your selection. Please try again."));
     },
   });
 

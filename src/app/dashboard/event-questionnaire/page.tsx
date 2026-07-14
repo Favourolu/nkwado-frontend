@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { submitQuestionnaire } from "@/lib/customer-api";
+import { getErrorMessage } from "@/lib/get-error-message";
 import {
   BUDGET_RANGE_LABELS,
   BudgetRange,
@@ -37,7 +38,13 @@ const vendorCategoryValues = Object.values(VendorCategory) as [string, ...string
 
 const questionnaireSchema = z.object({
   eventType: z.enum(eventTypeValues, { error: "Select an event type" }),
-  eventDate: z.string().optional(),
+  eventDate: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || value >= new Date().toISOString().slice(0, 10),
+      { error: "Event date can't be in the past" }
+    ),
   eventTime: z.string().optional(),
   customTimeFrom: z.string().optional(),
   customTimeTo: z.string().optional(),
@@ -105,6 +112,33 @@ const PRIORITY_OPTIONS = [
   { value: "QUALITY", label: "Getting the best quality" },
   { value: "SPEED", label: "Getting matched quickly" },
 ];
+
+const DRAFT_STORAGE_KEY = "nkwado-questionnaire-draft";
+
+interface QuestionnaireDraft {
+  values: Partial<QuestionnaireFormValues>;
+  stepIndex: number;
+}
+
+function loadDraft(): QuestionnaireDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as QuestionnaireDraft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(draft: QuestionnaireDraft) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+}
+
+function clearDraft() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(DRAFT_STORAGE_KEY);
+}
 
 type StepKey =
   | "basics"
@@ -193,12 +227,26 @@ export default function EventQuestionnairePage() {
     handleSubmit,
     trigger,
     setValue,
+    getValues,
+    reset,
     control,
     formState: { errors },
   } = useForm<QuestionnaireFormValues>({
     resolver: zodResolver(questionnaireSchema),
     defaultValues: { servicesNeeded: [], entertainmentType: [] },
   });
+
+  // Restore an in-progress questionnaire if the tab was closed before submitting.
+  useEffect(() => {
+    const draft = loadDraft();
+    if (draft) {
+      reset({ servicesNeeded: [], entertainmentType: [], ...draft.values });
+      setStepIndex(draft.stepIndex);
+      toast.info("We restored your in-progress questionnaire.");
+    }
+    // Only run once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Only fields that drive conditional rendering / ToggleGroup selection state
   // are watched reactively -- plain register()'d text/date/number inputs are
@@ -244,20 +292,28 @@ export default function EventQuestionnairePage() {
   const mutation = useMutation({
     mutationFn: submitQuestionnaire,
     onSuccess: (request) => {
+      clearDraft();
       toast.success("We're matching vendors for you!");
       router.push(`/dashboard/matching-results?requestId=${request.id}`);
     },
-    onError: () => {
-      toast.error("Couldn't submit your questionnaire. Please try again.");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Couldn't submit your questionnaire. Please try again."));
     },
   });
 
   const goNext = async () => {
     const valid = await trigger(STEP_FIELDS[stepKey]);
-    if (valid) setStepIndex((s) => Math.min(s + 1, totalSteps - 1));
+    if (!valid) return;
+    const nextIndex = Math.min(stepIndex + 1, totalSteps - 1);
+    setStepIndex(nextIndex);
+    saveDraft({ values: getValues(), stepIndex: nextIndex });
   };
 
-  const goBack = () => setStepIndex((s) => Math.max(s - 1, 0));
+  const goBack = () => {
+    const prevIndex = Math.max(stepIndex - 1, 0);
+    setStepIndex(prevIndex);
+    saveDraft({ values: getValues(), stepIndex: prevIndex });
+  };
 
   const onSubmit = (form: QuestionnaireFormValues) => {
     mutation.mutate({
@@ -325,7 +381,15 @@ export default function EventQuestionnairePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="eventDate">Event date</Label>
-                  <Input id="eventDate" type="date" {...register("eventDate")} />
+                  <Input
+                    id="eventDate"
+                    type="date"
+                    min={new Date().toISOString().slice(0, 10)}
+                    {...register("eventDate")}
+                  />
+                  {errors.eventDate && (
+                    <p className="text-sm text-destructive">{errors.eventDate.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Time of day</Label>
