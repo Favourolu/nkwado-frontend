@@ -9,12 +9,21 @@ interface TiltCardProps {
   title: string;
   subtitle?: string;
   gradient: string;
+  image?: string;
   icon?: LucideIcon;
   size?: "sm" | "lg";
   className?: string;
 }
 
-export function TiltCard({ title, subtitle, gradient, icon: Icon, size = "sm", className }: TiltCardProps) {
+export function TiltCard({
+  title,
+  subtitle,
+  gradient,
+  image,
+  icon: Icon,
+  size = "sm",
+  className,
+}: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<React.CSSProperties>({});
 
@@ -42,10 +51,23 @@ export function TiltCard({ title, subtitle, gradient, icon: Icon, size = "sm", c
       className={cn(
         "relative flex flex-col justify-end overflow-hidden rounded-3xl p-5 text-white shadow-lg will-change-transform",
         size === "lg" ? "h-64 sm:h-72" : "h-36",
-        gradient,
+        !image && gradient,
         className
       )}
     >
+      {image && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+          <div className={cn("absolute inset-0 opacity-35 mix-blend-multiply", gradient)} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+        </>
+      )}
       {Icon && (
         <Icon className="absolute right-4 top-4 h-5 w-5 text-white/70" strokeWidth={1.75} />
       )}
