@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { createBooking, getQuotes } from "@/lib/customer-api";
+import { ProgressTracker } from "@/components/progress-tracker";
+import { createBooking, getProgress, getQuotes } from "@/lib/customer-api";
 import { formatNaira } from "@/lib/format";
 
 const SERVICE_CHARGE_RATE = 0.1;
@@ -51,6 +52,14 @@ function BookingReview() {
     },
   });
 
+  const booking = mutation.data;
+
+  const { data: progress } = useQuery({
+    queryKey: ["customer-progress", requestId],
+    queryFn: () => getProgress(requestId as string),
+    enabled: Boolean(requestId) && Boolean(booking),
+  });
+
   if (!requestId || quoteIds.length === 0) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4 text-center">
@@ -58,8 +67,6 @@ function BookingReview() {
       </div>
     );
   }
-
-  const booking = mutation.data;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -152,6 +159,17 @@ function BookingReview() {
               <Link href="/dashboard/bookings">Proceed to payment</Link>
             </Button>
           </div>
+
+          {progress && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Your progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ProgressTracker steps={progress.steps} />
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
     </div>
