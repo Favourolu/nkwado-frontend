@@ -37,6 +37,19 @@ export const EventType = {
 } as const;
 export type EventType = (typeof EventType)[keyof typeof EventType];
 
+export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+  BIRTHDAY: "Birthday",
+  WEDDING: "Wedding",
+  ANNIVERSARY: "Anniversary",
+  CORPORATE: "Corporate",
+  GRADUATION: "Graduation",
+  ENGAGEMENT: "Engagement",
+  BABY_SHOWER: "Baby Shower",
+  CONCERT: "Concert",
+  CONFERENCE: "Conference",
+  OTHER: "Other",
+};
+
 export const VendorCategory = {
   CATERING: "CATERING",
   VENUE: "VENUE",
