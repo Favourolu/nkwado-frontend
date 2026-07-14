@@ -8,6 +8,31 @@
   }
 }
 
+@keyframes peacock-sway {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+@keyframes peacock-feather-spread {
+  0%, 100% { transform: rotate(var(--feather-angle)) scaleY(1); }
+  50% { transform: rotate(calc(var(--feather-angle) * 1.4)) scaleY(1.08); }
+}
+
+.peacock-sway {
+  animation: peacock-sway 4s ease-in-out infinite;
+}
+
+.peacock-feather {
+  animation: peacock-feather-spread 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peacock-sway,
+  .peacock-feather {
+    animation: none;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

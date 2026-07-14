@@ -1,4 +1,9 @@
-export function PeacockMark({ className }: { className?: string }) {
+interface PeacockMarkProps {
+  className?: string;
+  animated?: boolean;
+}
+
+export function PeacockMark({ className, animated = false }: PeacockMarkProps) {
   const feathers = [
     { angle: -48, base: "#0f6e6e", tip: "#5eead4" },
     { angle: -24, base: "#065f46", tip: "#34d399" },
@@ -15,20 +20,40 @@ export function PeacockMark({ className }: { className?: string }) {
       aria-label="Nkwado peacock mark"
     >
       <g transform="translate(50, 62)">
-        {feathers.map((f, i) => (
-          <g key={i} transform={`rotate(${f.angle})`}>
-            <path
-              d="M0,0 C10,-14 8,-34 0,-46 C-8,-34 -10,-14 0,0 Z"
-              fill={`url(#feather-gradient-${i})`}
-            />
-            <defs>
-              <linearGradient id={`feather-gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={f.tip} />
-                <stop offset="100%" stopColor={f.base} />
-              </linearGradient>
-            </defs>
-          </g>
-        ))}
+        <g
+          className={animated ? "peacock-sway" : undefined}
+          style={animated ? { transformBox: "fill-box", transformOrigin: "center" } : undefined}
+        >
+          {feathers.map((f, i) => (
+            <g
+              key={i}
+              transform={animated ? undefined : `rotate(${f.angle})`}
+              className={animated ? "peacock-feather" : undefined}
+              style={
+                animated
+                  ? ({
+                      "--feather-angle": `${f.angle}deg`,
+                      transformBox: "fill-box",
+                      transformOrigin: "center",
+                      transform: `rotate(${f.angle}deg)`,
+                      animationDelay: `${i * 0.15}s`,
+                    } as React.CSSProperties)
+                  : undefined
+              }
+            >
+              <path
+                d="M0,0 C10,-14 8,-34 0,-46 C-8,-34 -10,-14 0,0 Z"
+                fill={`url(#feather-gradient-${i})`}
+              />
+              <defs>
+                <linearGradient id={`feather-gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={f.tip} />
+                  <stop offset="100%" stopColor={f.base} />
+                </linearGradient>
+              </defs>
+            </g>
+          ))}
+        </g>
         <circle cx="0" cy="2" r="9" fill="#1c1917" />
         <circle cx="2.5" cy="-1" r="1.6" fill="#fde68a" />
       </g>
