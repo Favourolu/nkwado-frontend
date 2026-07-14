@@ -20,7 +20,7 @@ export default function QuotesPage() {
 }
 
 function formatCountdown(deadlineAt: string | null | undefined): string {
-  if (!deadlineAt) return "—";
+  if (!deadlineAt) return "No deadline";
   const diffMs = new Date(deadlineAt).getTime() - Date.now();
   if (diffMs <= 0) return "Expired";
   const hours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -93,7 +93,7 @@ function Quotes() {
         <h1 className="text-2xl font-semibold">Review vendor quotes</h1>
         <p className="text-muted-foreground">
           Select the quotes you&apos;d like to move forward with. Vendors have 24 hours to
-          respond so you get quotes fast — the countdown on each card shows how much time
+          respond so you get quotes fast; the countdown on each card shows how much time
           that vendor has left.
         </p>
       </div>
@@ -134,7 +134,7 @@ function Quotes() {
                   <ul className="text-sm text-muted-foreground">
                     {quote.itemization.map((row, i) => (
                       <li key={i}>
-                        {row.item} × {row.qty} — {formatNaira(row.total)}
+                        {row.item} × {row.qty}: {formatNaira(row.total)}
                       </li>
                     ))}
                   </ul>
