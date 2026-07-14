@@ -12,9 +12,12 @@ export default function CustomerDashboardPage() {
           within 24 hours, and help you book with confidence.
         </p>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         <Button asChild size="lg">
           <Link href="/dashboard/event-questionnaire">Start Planning</Link>
+        </Button>
+        <Button asChild variant="outline" size="lg">
+          <Link href="/dashboard/my-events">My Events</Link>
         </Button>
         <Button asChild variant="outline" size="lg">
           <Link href="/dashboard/bookings">My Bookings</Link>
