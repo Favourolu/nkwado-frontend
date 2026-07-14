@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/SectionHeader";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard" },
+  { label: "My Events", href: "/dashboard/my-events" },
   { label: "Bookings", href: "/dashboard/bookings" },
 ];
 

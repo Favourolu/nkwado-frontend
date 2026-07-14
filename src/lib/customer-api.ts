@@ -47,6 +47,11 @@ export async function getRequest(requestId: string) {
   return data.request;
 }
 
+export async function getRequests() {
+  const { data } = await apiClient.get<{ requests: EventRequest[] }>("/customers/requests");
+  return data.requests;
+}
+
 export interface CustomizePayload {
   selectedVendorIds: string[];
   notes?: string;
