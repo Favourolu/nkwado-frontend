@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { LandingPage } from "@/components/landing/LandingPage";
 import { dashboardPathForRole, useAuth } from "@/lib/use-auth";
 
 export default function Home() {
@@ -12,10 +13,12 @@ export default function Home() {
   useEffect(() => {
     if (isAuthenticated && currentUser) {
       router.replace(dashboardPathForRole(currentUser.role));
-    } else {
-      router.replace("/login");
     }
   }, [isAuthenticated, currentUser, router]);
 
-  return null;
+  if (isAuthenticated) {
+    return null;
+  }
+
+  return <LandingPage />;
 }
