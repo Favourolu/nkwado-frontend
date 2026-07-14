@@ -1,5 +1,5 @@
 import { apiClient } from "./api-client";
-import type { VendorCategory } from "./types";
+import type { BudgetRange, EventType, VendorCategory } from "./types";
 
 export type VendorStatus = "PENDING" | "APPROVED" | "REJECTED";
 
@@ -58,4 +58,52 @@ export async function onboardVendor(payload: OnboardPayload) {
 export async function getVendorProfile() {
   const { data } = await apiClient.get<{ vendor: Vendor }>("/vendors/profile");
   return data.vendor;
+}
+
+export interface Inquiry {
+  requestId: string;
+  customerId: string;
+  eventType: EventType;
+  eventDate?: string | null;
+  guestCount?: number | null;
+  budgetRange: BudgetRange;
+  specialRequirements?: string | null;
+  questionnaire?: Record<string, string> | null;
+  createdAt: string;
+  deadlineAt: string;
+}
+
+export async function getInquiries() {
+  const { data } = await apiClient.get<{ inquiries: Inquiry[] }>("/vendors/inquiries");
+  return data.inquiries;
+}
+
+export interface QuoteItemizationRow {
+  item: string;
+  qty: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface SubmitQuotePayload {
+  basePrice: number;
+  itemization?: QuoteItemizationRow[];
+  notes?: string;
+}
+
+export interface SubmittedQuote {
+  id: string;
+  requestId: string;
+  vendorId: string;
+  basePrice: number;
+  status: string;
+  submittedAt?: string;
+}
+
+export async function submitQuote(requestId: string, payload: SubmitQuotePayload) {
+  const { data } = await apiClient.post<{ quote: SubmittedQuote }>(
+    `/vendors/quotes/${requestId}`,
+    payload
+  );
+  return data.quote;
 }
