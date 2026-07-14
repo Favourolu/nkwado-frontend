@@ -46,3 +46,73 @@ export async function getRequest(requestId: string) {
   );
   return data.request;
 }
+
+export interface CustomizePayload {
+  selectedVendorIds: string[];
+  notes?: string;
+}
+
+export async function customizeRequest(requestId: string, payload: CustomizePayload) {
+  const { data } = await apiClient.post<{ request: EventRequest }>(
+    `/customers/customize/${requestId}`,
+    payload
+  );
+  return data.request;
+}
+
+export interface QuoteItemizationRow {
+  item: string;
+  qty: number;
+  unitPrice: number;
+  total: number;
+}
+
+export interface Quote {
+  id: string;
+  vendorId: string;
+  vendor: {
+    businessName: string;
+    category: string;
+    rating?: number;
+    location?: string;
+  };
+  basePrice: number;
+  itemization?: QuoteItemizationRow[] | null;
+  notes?: string | null;
+  status: string;
+  submittedAt?: string | null;
+  deadlineAt?: string | null;
+}
+
+export async function getQuotes(requestId: string) {
+  const { data } = await apiClient.get<{ quotes: Quote[] }>(
+    `/customers/requests/${requestId}/quotes`
+  );
+  return data.quotes;
+}
+
+export interface Booking {
+  id: string;
+  eventType: EventType;
+  eventDate?: string | null;
+  totalAmount: number;
+  subtotal?: number;
+  serviceCharge?: number;
+  status: string;
+  selectedVendors: { businessName: string; category: string }[];
+  billPdfUrl?: string | null;
+  createdAt: string;
+}
+
+export async function createBooking(requestId: string, selectedQuoteIds: string[]) {
+  const { data } = await apiClient.post<{ booking: Booking }>(
+    `/customers/booking/${requestId}`,
+    { selectedQuoteIds }
+  );
+  return data.booking;
+}
+
+export async function getBookings() {
+  const { data } = await apiClient.get<{ bookings: Booking[] }>("/customers/bookings");
+  return data.bookings;
+}

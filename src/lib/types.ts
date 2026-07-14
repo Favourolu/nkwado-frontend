@@ -23,6 +23,14 @@ export const BUDGET_RANGE_LABELS: Record<BudgetRange, string> = {
   ABOVE_5M: "₦5m+",
 };
 
+export const BUDGET_RANGE_MAX: Record<BudgetRange, number> = {
+  ZERO_TO_500K: 500_000,
+  FROM_500K_TO_1M: 1_000_000,
+  FROM_1M_TO_3M: 3_000_000,
+  FROM_3M_TO_5M: 5_000_000,
+  ABOVE_5M: Infinity,
+};
+
 export const EventType = {
   BIRTHDAY: "BIRTHDAY",
   WEDDING: "WEDDING",
