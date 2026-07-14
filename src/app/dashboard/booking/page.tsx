@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { ProgressTracker } from "@/components/progress-tracker";
 import { createBooking, getProgress, getQuotes } from "@/lib/customer-api";
 import { formatNaira } from "@/lib/format";
+import { getErrorMessage } from "@/lib/get-error-message";
 
 const SERVICE_CHARGE_RATE = 0.1;
 
@@ -47,8 +48,8 @@ function BookingReview() {
     onSuccess: () => {
       toast.success("Booking confirmed!");
     },
-    onError: () => {
-      toast.error("Couldn't confirm your booking. Please try again.");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Couldn't confirm your booking. Please try again."));
     },
   });
 
@@ -106,6 +107,10 @@ function BookingReview() {
                 <span>Service charge (10%)</span>
                 <span>{formatNaira(serviceCharge)}</span>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Covers vendor vetting, quote coordination, and booking support — Nkwado
+                doesn&apos;t charge vendors a listing fee, so this keeps the platform running.
+              </p>
               <Separator />
               <div className="flex justify-between font-semibold">
                 <span>Total</span>

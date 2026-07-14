@@ -33,9 +33,11 @@ export interface EventRequest {
 }
 
 export async function submitQuestionnaire(payload: QuestionnairePayload) {
+  // AI vendor matching can take much longer than the default request timeout.
   const { data } = await apiClient.post<{ request: EventRequest }>(
     "/customers/questionnaire",
-    payload
+    payload,
+    { timeout: 60000 }
   );
   return data.request;
 }
