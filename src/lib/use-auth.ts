@@ -4,6 +4,7 @@ import type { Role } from "./types";
 export function useAuth() {
   const currentUser = useAuthStore((s) => s.currentUser);
   const token = useAuthStore((s) => s.token);
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
   const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
@@ -11,6 +12,7 @@ export function useAuth() {
     currentUser,
     token,
     isAuthenticated: Boolean(token),
+    hasHydrated,
     setAuth,
     clearAuth,
   };
