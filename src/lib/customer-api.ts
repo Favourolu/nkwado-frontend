@@ -8,7 +8,7 @@ export interface QuestionnairePayload {
   location?: string;
   budgetRange: BudgetRange;
   specialRequirements?: string;
-  questionnaire?: Record<string, string>;
+  questionnaire?: Record<string, string | string[]>;
 }
 
 export interface MatchedVendor {
