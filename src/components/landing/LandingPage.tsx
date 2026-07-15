@@ -7,6 +7,7 @@ import {
   Camera,
   Car,
   Flower2,
+  HandCoins,
   Hotel,
   Music2,
   ShieldCheck,
@@ -143,6 +144,12 @@ const FEATURES = [
     icon: Car,
     title: "Support to the finish line",
     description: "From first quote to the day of your event, we're tracking progress with you.",
+  },
+  {
+    icon: HandCoins,
+    title: "Flexible financing, if you need it",
+    description:
+      "Don't let budget hold your event back. Spread the cost into monthly payments and get the vendors you actually want, not just the ones you can afford today.",
   },
 ];
 
