@@ -24,8 +24,8 @@ import { PeacockMark } from "./PeacockMark";
 import { TiltCard } from "./TiltCard";
 import { EVENT_TYPE_LABELS } from "@/lib/types";
 
-const PeacockHeroScene = dynamic(
-  () => import("@/components/three/PeacockHeroScene").then((m) => m.PeacockHeroScene),
+const PeacockScrollJourney = dynamic(
+  () => import("@/components/three/PeacockScrollJourney").then((m) => m.PeacockScrollJourney),
   { ssr: false }
 );
 
@@ -163,62 +163,31 @@ const FLOATING_BADGES = [
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
-        <div className="flex items-center gap-2">
-          <PeacockMark className="h-9 w-9" />
-          <span className="text-lg font-semibold tracking-tight">Nkwado</span>
-        </div>
-        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground sm:flex">
-          <a href="#how-it-works" className="hover:text-foreground">How it works</a>
-          <a href="#categories" className="hover:text-foreground">Categories</a>
-          <a href="#why-nkwado" className="hover:text-foreground">Why Nkwado</a>
-        </nav>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Button asChild variant="ghost">
-            <Link href="/login">Log in</Link>
-          </Button>
-          <Button asChild className="rounded-full px-5 font-semibold">
-            <Link href="/register">Get started</Link>
-          </Button>
+      <header className="absolute inset-x-0 top-0 z-20">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+          <div className="flex items-center gap-2">
+            <PeacockMark className="h-9 w-9" />
+            <span className="text-lg font-semibold tracking-tight">Nkwado</span>
+          </div>
+          <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground sm:flex">
+            <a href="#how-it-works" className="hover:text-foreground">How it works</a>
+            <a href="#categories" className="hover:text-foreground">Categories</a>
+            <a href="#why-nkwado" className="hover:text-foreground">Why Nkwado</a>
+          </nav>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Button asChild variant="ghost">
+              <Link href="/login">Log in</Link>
+            </Button>
+            <Button asChild className="rounded-full px-5 font-semibold">
+              <Link href="/register">Get started</Link>
+            </Button>
+          </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 pb-8 pt-2 sm:pb-16">
-        <div className="relative overflow-hidden rounded-[2rem] border shadow-xl">
-          <div className="h-[420px] w-full sm:h-[520px]">
-            <PeacockHeroScene />
-          </div>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-          <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-            <Sparkles className="h-3.5 w-3.5" />
-            Every vendor your event needs, in one place
-          </div>
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-5 p-6 sm:p-10">
-            <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-              Every vendor your event needs, curated into one beautiful display
-            </h1>
-            <p className="max-w-xl text-sm text-white/80 sm:text-base">
-              Answer a few questions and Nkwado matches you with vetted caterers, venues, DJs,
-              photographers and more, quoted within 24 hours, booked with confidence.
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="rounded-full font-semibold">
-                <Link href="/register">Start planning</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full border-white/40 bg-white/10 font-semibold text-white hover:bg-white/20 hover:text-white"
-              >
-                <Link href="/register">I&apos;m a vendor</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero: scroll-driven peacock journey */}
+      <PeacockScrollJourney />
 
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-4xl px-4 py-16">
