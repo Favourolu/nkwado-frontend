@@ -3,10 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { VendorDetailsDialog } from "@/components/VendorDetailsDialog";
 import { getRequest } from "@/lib/customer-api";
 import { formatNaira } from "@/lib/format";
 
@@ -21,6 +22,7 @@ export default function MatchingResultsPage() {
 function MatchingResults() {
   const searchParams = useSearchParams();
   const requestId = searchParams.get("requestId");
+  const [viewingVendorId, setViewingVendorId] = useState<string | null>(null);
 
   const { data: request, isLoading, isError } = useQuery({
     queryKey: ["customer-request", requestId],
@@ -72,7 +74,11 @@ function MatchingResults() {
                   <p className="font-medium">{formatNaira(vendor.basePrice)}</p>
                   <p className="text-sm text-muted-foreground">{vendor.reason}</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewingVendorId(vendor.vendorId)}
+                >
                   View details
                 </Button>
               </CardContent>
@@ -95,6 +101,11 @@ function MatchingResults() {
           </div>
         </div>
       )}
+
+      <VendorDetailsDialog
+        vendorId={viewingVendorId}
+        onOpenChange={(open) => !open && setViewingVendorId(null)}
+      />
     </div>
   );
 }

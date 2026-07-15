@@ -19,6 +19,28 @@ export interface MatchedVendor {
   reason: string;
 }
 
+export interface VendorDetails {
+  id: string;
+  businessName: string;
+  category: string;
+  description?: string | null;
+  location?: string | null;
+  priceRange?: string | null;
+  services?: string[];
+  rating?: number | null;
+  reviewCount?: number | null;
+  // Photo URLs are short-lived (expire ~15 min) — fetch fresh via this
+  // endpoint whenever they need to be shown, never cache/persist them.
+  photos?: string[];
+}
+
+export async function getVendorDetails(vendorId: string) {
+  const { data } = await apiClient.get<{ vendor: VendorDetails }>(
+    `/customers/vendors/${vendorId}`
+  );
+  return data.vendor;
+}
+
 export interface EventRequest {
   id: string;
   eventType: EventType;
