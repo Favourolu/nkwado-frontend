@@ -22,7 +22,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "@/components/vendor/FileDropzone";
 import { onboardVendor } from "@/lib/vendor-api";
+import { getErrorMessage } from "@/lib/get-error-message";
 import { VENDOR_CATEGORY_LABELS, VendorCategory } from "@/lib/types";
+
+const DOCUMENT_ACCEPT = {
+  "application/pdf": [".pdf"],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
+};
 
 const vendorCategoryValues = Object.values(VendorCategory) as [string, ...string[]];
 
@@ -63,8 +70,8 @@ export default function VendorOnboardPage() {
       toast.success("Onboarding submitted! Your account is under review.");
       router.push("/vendor/profile");
     },
-    onError: () => {
-      toast.error("Couldn't submit onboarding. Please check your details.");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Couldn't submit onboarding. Please check your details."));
     },
   });
 
@@ -169,19 +176,21 @@ export default function VendorOnboardPage() {
               files={cacDocument}
               onChange={setCacDocument}
               multiple={false}
+              accept={DOCUMENT_ACCEPT}
             />
             <FileDropzone
               label="Supporting documents"
               files={supportingDocuments}
               onChange={setSupportingDocuments}
               multiple
+              accept={DOCUMENT_ACCEPT}
             />
             <FileDropzone
               label="Profile photos"
               files={profilePhotos}
               onChange={setProfilePhotos}
               multiple
-              accept={{ "image/*": [] }}
+              accept={{ "image/jpeg": [".jpg", ".jpeg"], "image/png": [".png"] }}
             />
 
             <Button type="submit" className="w-full" disabled={mutation.isPending}>

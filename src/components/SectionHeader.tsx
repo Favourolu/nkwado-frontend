@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { PeacockMark } from "@/components/landing/PeacockMark";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { logoutAllDevices } from "@/lib/auth-api";
 import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,25 @@ export function SectionHeader({ navItems }: { navItems: NavItem[] }) {
   const handleLogout = () => {
     clearAuth();
     router.push("/login");
+  };
+
+  const handleLogoutAllDevices = async () => {
+    if (
+      !window.confirm(
+        "Log out of all your devices? You'll need to sign in again everywhere, including this one."
+      )
+    ) {
+      return;
+    }
+    try {
+      await logoutAllDevices();
+      toast.success("Logged out of all devices");
+    } catch {
+      toast.error("Couldn't reach the server, but you're logged out here.");
+    } finally {
+      clearAuth();
+      router.push("/login");
+    }
   };
 
   return (
@@ -49,6 +70,14 @@ export function SectionHeader({ navItems }: { navItems: NavItem[] }) {
         </nav>
         <div className="flex items-center gap-1">
           <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="hidden text-muted-foreground sm:inline-flex"
+            onClick={handleLogoutAllDevices}
+          >
+            Log out everywhere
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
             Log out
           </Button>

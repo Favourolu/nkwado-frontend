@@ -11,45 +11,51 @@ import { BUDGET_RANGE_LABELS, EVENT_TYPE_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: "Pending match",
-  matched: "Matched",
-  quoted: "Quotes ready",
-  customized: "Quotes ready",
-  booked: "Booked",
+  PENDING: "Pending match",
+  MATCHED: "Matched",
+  QUOTED: "Quotes ready",
+  CUSTOMIZED: "Quotes ready",
+  BOOKED: "Booked",
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-amber-500/10 text-amber-600 border-amber-500/30",
-  matched: "bg-blue-500/10 text-blue-600 border-blue-500/30",
-  quoted: "bg-violet-500/10 text-violet-600 border-violet-500/30",
-  customized: "bg-violet-500/10 text-violet-600 border-violet-500/30",
-  booked: "bg-green-500/10 text-green-600 border-green-500/30",
+  PENDING: "bg-amber-500/10 text-amber-600 border-amber-500/30",
+  MATCHED: "bg-blue-500/10 text-blue-600 border-blue-500/30",
+  QUOTED: "bg-violet-500/10 text-violet-600 border-violet-500/30",
+  CUSTOMIZED: "bg-violet-500/10 text-violet-600 border-violet-500/30",
+  BOOKED: "bg-green-500/10 text-green-600 border-green-500/30",
 };
 
+// Normalize defensively: backend now sends uppercase status strings, but this
+// guards against any stray lowercase values instead of silently mismatching.
+function normalizeStatus(status: string) {
+  return status.toUpperCase();
+}
+
 function nextStepHref(requestId: string, status: string) {
-  switch (status) {
-    case "quoted":
-    case "customized":
+  switch (normalizeStatus(status)) {
+    case "QUOTED":
+    case "CUSTOMIZED":
       return `/dashboard/quotes?requestId=${requestId}`;
-    case "booked":
+    case "BOOKED":
       return `/dashboard/progress/${requestId}`;
-    case "matched":
-    case "pending":
+    case "MATCHED":
+    case "PENDING":
     default:
       return `/dashboard/matching-results?requestId=${requestId}`;
   }
 }
 
 function nextStepLabel(status: string) {
-  switch (status) {
-    case "quoted":
-    case "customized":
+  switch (normalizeStatus(status)) {
+    case "QUOTED":
+    case "CUSTOMIZED":
       return "Review quotes";
-    case "booked":
+    case "BOOKED":
       return "Track progress";
-    case "matched":
+    case "MATCHED":
       return "View matches";
-    case "pending":
+    case "PENDING":
     default:
       return "View status";
   }
@@ -105,9 +111,9 @@ export default function MyEventsPage() {
               </div>
               <Badge
                 variant="outline"
-                className={cn("whitespace-nowrap", STATUS_STYLES[request.status])}
+                className={cn("whitespace-nowrap", STATUS_STYLES[normalizeStatus(request.status)])}
               >
-                {STATUS_LABELS[request.status] ?? request.status}
+                {STATUS_LABELS[normalizeStatus(request.status)] ?? request.status}
               </Badge>
             </CardHeader>
             <CardContent className="flex items-center justify-between">

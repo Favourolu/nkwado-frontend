@@ -22,7 +22,7 @@ export function FileDropzone({ label, files, onChange, multiple = false, accept 
     [files, multiple, onChange]
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
     onDrop,
     multiple,
     accept,
@@ -47,6 +47,13 @@ export function FileDropzone({ label, files, onChange, multiple = false, accept 
           {isDragActive ? "Drop files here" : "Drag & drop, or click to select"}
         </p>
       </div>
+      {fileRejections.length > 0 && (
+        <p className="text-sm text-destructive">
+          {fileRejections.map((r) => r.file.name).join(", ")}{" "}
+          {fileRejections.length === 1 ? "isn't a supported file type" : "aren't supported file types"}.
+          Please upload a PDF, JPG, or PNG.
+        </p>
+      )}
       {files.length > 0 && (
         <ul className="space-y-1">
           {files.map((file, index) => (
