@@ -29,7 +29,7 @@ export default function AdminVendorVettingPage() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
 
-  const { data: vendors, isLoading, isError } = useQuery({
+  const { data: vendors, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin-pending-vendors"],
     queryFn: getPendingVendors,
   });
@@ -38,6 +38,15 @@ export default function AdminVendorVettingPage() {
     setReviewing(null);
     setShowRejectForm(false);
     setRejectionReason("");
+  };
+
+  // Document links expire after 15 minutes, so always fetch a fresh copy of
+  // the vendor's record right before showing them instead of trusting
+  // whatever was in the list when it last loaded.
+  const openReview = async (vendorId: string) => {
+    const result = await refetch();
+    const fresh = result.data?.find((v) => v.id === vendorId);
+    setReviewing(fresh ?? vendors?.find((v) => v.id === vendorId) ?? null);
   };
 
   const approveMutation = useMutation({
@@ -86,7 +95,7 @@ export default function AdminVendorVettingPage() {
                     {new Date(vendor.createdAt).toLocaleDateString()}
                   </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => setReviewing(vendor)}>
+                <Button variant="outline" size="sm" onClick={() => openReview(vendor.id)}>
                   Review
                 </Button>
               </CardHeader>

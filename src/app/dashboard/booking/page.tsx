@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { ProgressTracker } from "@/components/progress-tracker";
 import {
   createBooking,
+  getBookings,
   getFinancingOptions,
   getProgress,
   getQuotes,
@@ -273,10 +274,23 @@ function BookingReview() {
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row">
               {booking.billPdfUrl && (
-                <Button asChild variant="outline" className="flex-1">
-                  <a href={booking.billPdfUrl} target="_blank" rel="noopener noreferrer">
-                    Download bill
-                  </a>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={async () => {
+                    // Document links expire after 15 minutes, so fetch a
+                    // fresh one right before opening rather than reusing
+                    // whatever URL was returned when the booking was created.
+                    try {
+                      const bookings = await getBookings();
+                      const fresh = bookings.find((b) => b.id === booking.id);
+                      window.open(fresh?.billPdfUrl ?? booking.billPdfUrl ?? "", "_blank", "noopener,noreferrer");
+                    } catch {
+                      window.open(booking.billPdfUrl ?? "", "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                >
+                  Download bill
                 </Button>
               )}
               <Button asChild className="flex-1">

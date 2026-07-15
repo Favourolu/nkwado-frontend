@@ -34,3 +34,7 @@ export async function getMe() {
   const { data } = await apiClient.get("/auth/me");
   return data;
 }
+
+export async function logoutAllDevices() {
+  await apiClient.post("/auth/logout-all");
+}

@@ -20,7 +20,11 @@ import {
 import { getAdminRequests, type AdminRequest } from "@/lib/admin-api";
 import { BUDGET_RANGE_LABELS, EVENT_TYPE_LABELS } from "@/lib/types";
 
-const REQUEST_STATUSES = ["pending", "matched", "quoted", "booked"];
+const REQUEST_STATUSES = ["PENDING", "MATCHED", "QUOTED", "BOOKED"];
+
+function titleCase(value: string) {
+  return value.charAt(0) + value.slice(1).toLowerCase();
+}
 
 export default function AdminRequestsPage() {
   const [status, setStatus] = useState<string>("all");
@@ -52,7 +56,7 @@ export default function AdminRequestsPage() {
             <SelectItem value="all">All statuses</SelectItem>
             {REQUEST_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+                {titleCase(s)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -100,7 +104,7 @@ export default function AdminRequestsPage() {
                   </p>
                 </div>
                 <div className="text-right text-sm text-muted-foreground">
-                  <p className="capitalize">{request.status}</p>
+                  <p>{titleCase(request.status)}</p>
                   <p>{request.quoteCount} quotes</p>
                 </div>
               </CardHeader>
@@ -131,8 +135,7 @@ export default function AdminRequestsPage() {
                 {BUDGET_RANGE_LABELS[viewing.budgetRange] ?? viewing.budgetRange}
               </p>
               <p>
-                <span className="font-medium">Status:</span>{" "}
-                <span className="capitalize">{viewing.status}</span>
+                <span className="font-medium">Status:</span> {titleCase(viewing.status)}
               </p>
               <p>
                 <span className="font-medium">Quotes received:</span> {viewing.quoteCount}
