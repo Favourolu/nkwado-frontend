@@ -3,16 +3,24 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ProgressTracker } from "@/components/progress-tracker";
-import { createBooking, getProgress, getQuotes } from "@/lib/customer-api";
+import {
+  createBooking,
+  getFinancingOptions,
+  getProgress,
+  getQuotes,
+  type PaymentMethod,
+} from "@/lib/customer-api";
 import { formatNaira } from "@/lib/format";
 import { getErrorMessage } from "@/lib/get-error-message";
+import { cn } from "@/lib/utils";
 
 const SERVICE_CHARGE_RATE = 0.1;
 
@@ -43,8 +51,22 @@ function BookingReview() {
   const serviceCharge = Math.round(subtotal * SERVICE_CHARGE_RATE);
   const total = subtotal + serviceCharge;
 
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("FULL_PAYMENT");
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+
+  const { data: financingPlans, isLoading: loadingPlans } = useQuery({
+    queryKey: ["financing-options", total],
+    queryFn: () => getFinancingOptions(total),
+    enabled: Boolean(requestId) && total > 0,
+  });
+
   const mutation = useMutation({
-    mutationFn: () => createBooking(requestId as string, quoteIds),
+    mutationFn: () =>
+      createBooking(requestId as string, {
+        selectedQuoteIds: quoteIds,
+        paymentMethod,
+        planId: paymentMethod === "FINANCED" ? selectedPlanId ?? undefined : undefined,
+      }),
     onSuccess: () => {
       toast.success("Booking confirmed!");
     },
@@ -54,6 +76,9 @@ function BookingReview() {
   });
 
   const booking = mutation.data;
+  const financingUnderReview =
+    booking?.paymentMethod === "FINANCED" &&
+    booking.loanApplication?.status === "PENDING_REVIEW";
 
   const { data: progress } = useQuery({
     queryKey: ["customer-progress", requestId],
@@ -68,6 +93,8 @@ function BookingReview() {
       </div>
     );
   }
+
+  const canConfirm = paymentMethod === "FULL_PAYMENT" || Boolean(selectedPlanId);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
@@ -119,9 +146,78 @@ function BookingReview() {
             </CardContent>
           </Card>
 
+          <div className="space-y-3">
+            <h2 className="text-base font-semibold">How would you like to pay?</h2>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPaymentMethod("FULL_PAYMENT");
+                setSelectedPlanId(null);
+              }}
+              className={cn(
+                "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-colors",
+                paymentMethod === "FULL_PAYMENT"
+                  ? "border-primary bg-primary/5"
+                  : "border-input hover:bg-accent"
+              )}
+            >
+              <div>
+                <p className="font-medium">Pay in full</p>
+                <p className="text-sm text-muted-foreground">One payment, nothing else owed.</p>
+              </div>
+              <p className="font-semibold">{formatNaira(total)}</p>
+            </button>
+
+            {loadingPlans && (
+              <p className="text-sm text-muted-foreground">Checking financing options...</p>
+            )}
+
+            {financingPlans && financingPlans.length > 0 && (
+              <div className="space-y-2">
+                {financingPlans.map((plan) => {
+                  const costOfCredit = plan.totalRepayable - total;
+                  const selected = paymentMethod === "FINANCED" && selectedPlanId === plan.id;
+                  return (
+                    <button
+                      key={plan.id}
+                      type="button"
+                      onClick={() => {
+                        setPaymentMethod("FINANCED");
+                        setSelectedPlanId(plan.id);
+                      }}
+                      className={cn(
+                        "w-full rounded-lg border p-4 text-left transition-colors",
+                        selected ? "border-primary bg-primary/5" : "border-input hover:bg-accent"
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">Pay over {plan.tenorMonths} months</p>
+                        <p className="font-semibold">{formatNaira(plan.monthlyPayment)}/mo</p>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between text-sm text-muted-foreground">
+                        <span>
+                          Total repayable: <span className="font-medium">{formatNaira(plan.totalRepayable)}</span>
+                        </span>
+                        <span>
+                          Cost of credit: <span className="font-medium">{formatNaira(costOfCredit)}</span>
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+                <p className="text-xs text-muted-foreground">
+                  &quot;Cost of credit&quot; is the total amount you pay in interest and fees on top
+                  of {formatNaira(total)} over the life of the plan. Financing is subject to
+                  approval after you confirm this booking.
+                </p>
+              </div>
+            )}
+          </div>
+
           <Button
             className="w-full"
-            disabled={mutation.isPending}
+            disabled={mutation.isPending || !canConfirm}
             onClick={() => mutation.mutate()}
           >
             {mutation.isPending ? "Confirming..." : "Confirm booking"}
@@ -152,18 +248,42 @@ function BookingReview() {
             </CardContent>
           </Card>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            {booking.billPdfUrl && (
-              <Button asChild variant="outline" className="flex-1">
-                <a href={booking.billPdfUrl} target="_blank" rel="noopener noreferrer">
-                  Download bill
-                </a>
+          {financingUnderReview ? (
+            <Card className="border-amber-500/30 bg-amber-500/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  Your financing is under review
+                  <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-600">
+                    Pending review
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Good news: your vendors are already locked in, so nothing about your event is
+                  at risk while this is being reviewed. Financing approvals can take longer than
+                  the rest of the booking process. We&apos;ll update the status here and on your
+                  financing page as soon as a decision is made.
+                </p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/dashboard/loans">View financing status</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="flex flex-col gap-3 sm:flex-row">
+              {booking.billPdfUrl && (
+                <Button asChild variant="outline" className="flex-1">
+                  <a href={booking.billPdfUrl} target="_blank" rel="noopener noreferrer">
+                    Download bill
+                  </a>
+                </Button>
+              )}
+              <Button asChild className="flex-1">
+                <Link href="/dashboard/bookings">Proceed to payment</Link>
               </Button>
-            )}
-            <Button asChild className="flex-1">
-              <Link href="/dashboard/bookings">Proceed to payment</Link>
-            </Button>
-          </div>
+            </div>
+          )}
 
           {progress && (
             <Card>

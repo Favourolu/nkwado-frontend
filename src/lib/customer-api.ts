@@ -98,6 +98,23 @@ export async function getQuotes(requestId: string) {
   return data.quotes;
 }
 
+export type PaymentMethod = "FULL_PAYMENT" | "FINANCED";
+
+export type LoanStatus = "PENDING_REVIEW" | "APPROVED" | "REJECTED" | "DISBURSED";
+
+export interface LoanApplication {
+  id: string;
+  bookingId?: string | null;
+  planId: string;
+  amount: number;
+  monthlyPayment?: number;
+  totalRepayable?: number;
+  tenorMonths?: number;
+  status: LoanStatus;
+  createdAt: string;
+  updatedAt?: string | null;
+}
+
 export interface Booking {
   id: string;
   requestId?: string;
@@ -107,15 +124,23 @@ export interface Booking {
   subtotal?: number;
   serviceCharge?: number;
   status: string;
+  paymentMethod?: PaymentMethod;
+  loanApplication?: LoanApplication | null;
   selectedVendors: { businessName: string; category: string }[];
   billPdfUrl?: string | null;
   createdAt: string;
 }
 
-export async function createBooking(requestId: string, selectedQuoteIds: string[]) {
+export interface CreateBookingPayload {
+  selectedQuoteIds: string[];
+  paymentMethod: PaymentMethod;
+  planId?: string;
+}
+
+export async function createBooking(requestId: string, payload: CreateBookingPayload) {
   const { data } = await apiClient.post<{ booking: Booking }>(
     `/customers/booking/${requestId}`,
-    { selectedQuoteIds }
+    payload
   );
   return data.booking;
 }
@@ -123,6 +148,27 @@ export async function createBooking(requestId: string, selectedQuoteIds: string[
 export async function getBookings() {
   const { data } = await apiClient.get<{ bookings: Booking[] }>("/customers/bookings");
   return data.bookings;
+}
+
+export interface FinancingPlan {
+  id: string;
+  tenorMonths: number;
+  monthlyPayment: number;
+  totalRepayable: number;
+  interestRate?: number;
+}
+
+export async function getFinancingOptions(amount: number) {
+  const { data } = await apiClient.get<{ plans: FinancingPlan[] }>(
+    "/customers/financing-options",
+    { params: { amount } }
+  );
+  return data.plans;
+}
+
+export async function getLoans() {
+  const { data } = await apiClient.get<{ loans: LoanApplication[] }>("/customers/loans");
+  return data.loans;
 }
 
 export type ProgressStepStatus = "completed" | "in_progress" | "pending";
