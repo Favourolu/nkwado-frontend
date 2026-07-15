@@ -165,9 +165,9 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="absolute inset-x-0 top-0 z-20">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-4 sm:px-4 sm:py-5">
           <div className="flex items-center gap-2">
-            <PeacockMark className="h-9 w-9" />
+            <PeacockMark className="h-8 w-8 sm:h-9 sm:w-9" />
             <span className="text-lg font-semibold tracking-tight">Nkwado</span>
           </div>
           <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground sm:flex">
@@ -175,12 +175,12 @@ export function LandingPage() {
             <a href="#categories" className="hover:text-foreground">Categories</a>
             <a href="#why-nkwado" className="hover:text-foreground">Why Nkwado</a>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             <ThemeToggle />
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" size="sm" className="sm:h-10 sm:px-4">
               <Link href="/login">Log in</Link>
             </Button>
-            <Button asChild className="rounded-full px-5 font-semibold">
+            <Button asChild size="sm" className="rounded-full px-4 font-semibold sm:h-10 sm:px-5">
               <Link href="/register">Get started</Link>
             </Button>
           </div>

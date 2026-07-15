@@ -55,7 +55,11 @@ function UnfurlingFan({ progressRef }: { progressRef: React.MutableRefObject<num
     const py = state.pointer.y;
 
     // Camera: starts close on the lone feather, pulls back as the fan opens.
-    const targetZ = 4.2 + smooth((p - 0.25) / 0.5) * 2.2;
+    // On narrow (portrait) screens, pull back further so the full spread
+    // still fits in the horizontal field of view.
+    const aspect = state.size.width / state.size.height;
+    const fit = Math.min(Math.max(1.05 / aspect, 1), 1.8);
+    const targetZ = (4.2 + smooth((p - 0.25) / 0.5) * 2.2) * fit;
     cam.position.x += (px * 0.5 - cam.position.x) * 0.05;
     cam.position.y += (0.45 + py * 0.3 - cam.position.y) * 0.05;
     cam.position.z += (targetZ - cam.position.z) * 0.08;
@@ -162,7 +166,7 @@ export function PeacockScrollJourney() {
 
   return (
     <div ref={wrapperRef} className="relative h-[380vh]">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div className="sticky top-0 h-screen w-full overflow-hidden supports-[height:100svh]:h-svh">
         <div className="absolute inset-0">
           <Canvas
             dpr={[1, 1.75]}

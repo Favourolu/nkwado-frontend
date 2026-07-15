@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 
 export interface JourneyStep {
@@ -122,6 +122,9 @@ function StepBead({
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const labelRef = useRef<HTMLDivElement>(null);
+  // On phones the camera sits further back, so bump the label scale to keep
+  // step names readable.
+  const isNarrow = useThree((state) => state.size.width < 640);
 
   useFrame(() => {
     // Beads pop in as the traveler reaches them.
@@ -142,7 +145,7 @@ function StepBead({
         <sphereGeometry args={[0.14, 24, 24]} />
         <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.9} />
       </mesh>
-      <Html distanceFactor={8} position={[0, 0.34, 0]} center>
+      <Html distanceFactor={isNarrow ? 12 : 8} position={[0, 0.34, 0]} center>
         <div
           ref={labelRef}
           className="w-36 rounded-md bg-background/90 px-2 py-1 text-center text-[11px] font-medium leading-tight text-foreground shadow-sm sm:w-44 sm:text-sm"
@@ -170,13 +173,21 @@ function JourneyInner({
     const cam = state.camera;
     const t = clamp01(smooth(p / 0.9));
     const point = curve.getPointAt(t);
+    // On portrait screens, back the camera off so a useful stretch of the
+    // path stays in the narrower horizontal field of view.
+    const aspect = state.size.width / state.size.height;
+    const fit = Math.min(Math.max(1.15 / aspect, 1), 1.6);
     // Camera drifts sideways with the traveler and eases with the cursor.
     cam.position.x += (point.x * 0.55 + state.pointer.x * 0.4 - cam.position.x) * 0.05;
     cam.position.y += (0.2 + state.pointer.y * 0.25 - cam.position.y) * 0.05;
+    cam.position.z += (5.5 * fit - cam.position.z) * 0.08;
     cam.lookAt(point.x * 0.4, 0, 0);
 
     if (groupRef.current) {
       groupRef.current.rotation.y = state.pointer.x * 0.08;
+      // Slightly shrink the whole path on phones as well.
+      const s = aspect < 0.8 ? 0.85 : 1;
+      groupRef.current.scale.setScalar(s);
     }
   });
 
@@ -224,8 +235,8 @@ export function JourneyScrollScene({ steps }: { steps: JourneyStep[] }) {
 
   return (
     <div ref={wrapperRef} id="how-it-works" className="relative h-[250vh]">
-      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden">
-        <div className="pt-20 text-center sm:pt-24">
+      <div className="sticky top-0 flex h-screen w-full flex-col overflow-hidden supports-[height:100svh]:h-svh">
+        <div className="px-4 pt-16 text-center sm:pt-24">
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">How it works</h2>
           <p className="text-muted-foreground">
             From idea to booked event in five simple steps. Keep scrolling.
