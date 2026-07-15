@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PeacockMark } from "./PeacockMark";
+import { Reveal } from "./Reveal";
 import { TiltCard } from "./TiltCard";
 import { EVENT_TYPE_LABELS } from "@/lib/types";
 
@@ -29,8 +30,8 @@ const PeacockScrollJourney = dynamic(
   { ssr: false }
 );
 
-const JourneyScene = dynamic(
-  () => import("@/components/three/JourneyScene").then((m) => m.JourneyScene),
+const JourneyScrollScene = dynamic(
+  () => import("@/components/three/JourneyScrollScene").then((m) => m.JourneyScrollScene),
   { ssr: false }
 );
 
@@ -189,22 +190,12 @@ export function LandingPage() {
       {/* Hero: scroll-driven peacock journey */}
       <PeacockScrollJourney />
 
-      {/* How it works */}
-      <section id="how-it-works" className="mx-auto max-w-4xl px-4 py-16">
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">How it works</h2>
-          <p className="text-muted-foreground">
-            From idea to booked event in five simple steps.
-          </p>
-        </div>
-        <div className="h-[360px] sm:h-[420px]">
-          <JourneyScene steps={JOURNEY_STEPS} />
-        </div>
-      </section>
+      {/* How it works: scroll-scrubbed journey path */}
+      <JourneyScrollScene steps={JOURNEY_STEPS} />
 
       {/* Categories */}
       <section id="categories" className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mb-8 text-center">
+        <Reveal className="mb-8 text-center">
           <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             One display, every color of vendor
           </h2>
@@ -213,15 +204,19 @@ export function LandingPage() {
             heads. Nkwado works the same way, bringing every vendor your event needs into one
             show-stopping display.
           </p>
-        </div>
+        </Reveal>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {CATEGORY_CARDS.filter((c) => c.size === "lg").map((card) => (
-            <TiltCard key={card.title} {...card} />
+          {CATEGORY_CARDS.filter((c) => c.size === "lg").map((card, i) => (
+            <Reveal key={card.title} delay={i * 120}>
+              <TiltCard {...card} />
+            </Reveal>
           ))}
         </div>
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {CATEGORY_CARDS.filter((c) => c.size !== "lg").map((card) => (
-            <TiltCard key={card.title} {...card} />
+          {CATEGORY_CARDS.filter((c) => c.size !== "lg").map((card, i) => (
+            <Reveal key={card.title} delay={(i % 4) * 100}>
+              <TiltCard {...card} />
+            </Reveal>
           ))}
         </div>
       </section>
@@ -230,67 +225,75 @@ export function LandingPage() {
       <section id="why-nkwado" className="mx-auto max-w-6xl px-4 py-16">
         <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Every event, perfectly planned
-            </h2>
-            <p className="mt-2 max-w-md text-muted-foreground">
-              Built for the way events actually come together: many vendors, one plan, zero
-              guesswork.
-            </p>
+            <Reveal>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                Every event, perfectly planned
+              </h2>
+              <p className="mt-2 max-w-md text-muted-foreground">
+                Built for the way events actually come together: many vendors, one plan, zero
+                guesswork.
+              </p>
+            </Reveal>
             <div className="mt-8 space-y-6">
-              {FEATURES.map((feature) => (
-                <div key={feature.title} className="flex gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                    <feature.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
+              {FEATURES.map((feature, i) => (
+                <Reveal key={feature.title} delay={i * 110}>
+                  <div className="flex gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <feature.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="font-medium">{feature.title}</p>
+                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">{feature.title}</p>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/5 to-primary/10 p-8">
-            <div className="flex h-full min-h-[320px] items-center justify-center">
-              <PeacockMark className="h-40 w-40" animated />
-            </div>
-            {FLOATING_BADGES.map((badge, i) => (
-              <div
-                key={i}
-                className={`absolute flex h-12 w-12 items-center justify-center rounded-full border bg-card shadow-md ${badge.style}`}
-              >
-                <badge.icon className="h-5 w-5 text-foreground/70" strokeWidth={1.75} />
+          <Reveal delay={150} className="h-full">
+            <div className="relative h-full overflow-hidden rounded-[2rem] border bg-gradient-to-br from-primary/5 to-primary/10 p-8">
+              <div className="flex h-full min-h-[320px] items-center justify-center">
+                <PeacockMark className="h-40 w-40" animated />
               </div>
-            ))}
-          </div>
+              {FLOATING_BADGES.map((badge, i) => (
+                <div
+                  key={i}
+                  className={`absolute flex h-12 w-12 items-center justify-center rounded-full border bg-card shadow-md ${badge.style}`}
+                >
+                  <badge.icon className="h-5 w-5 text-foreground/70" strokeWidth={1.75} />
+                </div>
+              ))}
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Final CTA */}
       <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="rounded-[2rem] bg-foreground px-6 py-14 text-center text-background sm:px-16">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Planning a {EVENT_TYPE_LABELS.WEDDING.toLowerCase()}, {EVENT_TYPE_LABELS.BIRTHDAY.toLowerCase()}, or something else?
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-background/70">
-            Nkwado handles it all, from intimate gatherings to large celebrations.
-          </p>
-          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" variant="secondary" className="rounded-full font-semibold">
-              <Link href="/register">Plan my event</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="rounded-full border-background/30 bg-transparent font-semibold text-background hover:bg-background/10 hover:text-background"
-            >
-              <Link href="/register">Become a vendor</Link>
-            </Button>
+        <Reveal>
+          <div className="rounded-[2rem] bg-foreground px-6 py-14 text-center text-background sm:px-16">
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              Planning a {EVENT_TYPE_LABELS.WEDDING.toLowerCase()}, {EVENT_TYPE_LABELS.BIRTHDAY.toLowerCase()}, or something else?
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-background/70">
+              Nkwado handles it all, from intimate gatherings to large celebrations.
+            </p>
+            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+              <Button asChild size="lg" variant="secondary" className="rounded-full font-semibold">
+                <Link href="/register">Plan my event</Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-full border-background/30 bg-transparent font-semibold text-background hover:bg-background/10 hover:text-background"
+              >
+                <Link href="/register">Become a vendor</Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       <footer className="border-t px-4 py-8 text-center text-sm text-muted-foreground">
