@@ -7,6 +7,7 @@ import {
   Camera,
   Car,
   Flower2,
+  Hotel,
   Music2,
   ShieldCheck,
   Shirt,
@@ -58,7 +59,7 @@ const CATEGORY_CARDS: {
   },
   {
     title: "Venue",
-    subtitle: "Halls, gardens, rooftops, hotels",
+    subtitle: "Halls, gardens, and rooftops",
     gradient: "bg-gradient-to-br from-teal-700 to-teal-400",
     image: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900&q=70&auto=format&fit=crop",
     icon: Warehouse,
@@ -112,6 +113,13 @@ const CATEGORY_CARDS: {
     gradient: "bg-gradient-to-br from-indigo-700 to-indigo-400",
     image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=70&auto=format&fit=crop",
     icon: CalendarCheck,
+  },
+  {
+    title: "Accommodation",
+    subtitle: "Hotels and lodges for guests",
+    gradient: "bg-gradient-to-br from-orange-700 to-orange-400",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=70&auto=format&fit=crop",
+    icon: Hotel,
   },
 ];
 
@@ -225,7 +233,9 @@ export function LandingPage() {
             One display, every color of vendor
           </h2>
           <p className="text-muted-foreground">
-            Like a peacock&apos;s feathers, every vendor category comes together for your event.
+            A peacock never wins a mate with a single feather. It&apos;s the full fan that turns
+            heads. Nkwado works the same way, bringing every vendor your event needs into one
+            show-stopping display.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
