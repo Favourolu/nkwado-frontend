@@ -233,7 +233,9 @@ export function LandingPage() {
             One display, every color of vendor
           </h2>
           <p className="text-muted-foreground">
-            Like a peacock&apos;s feathers, every vendor category comes together for your event.
+            A peacock never wins a mate with a single feather. It&apos;s the full fan that turns
+            heads. Nkwado works the same way, bringing every vendor your event needs into one
+            show-stopping display.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
