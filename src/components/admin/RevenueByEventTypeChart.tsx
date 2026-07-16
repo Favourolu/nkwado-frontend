@@ -14,7 +14,7 @@ const BAR_MAX_THICKNESS = 40;
 const BAR_GAP = 2;
 const CORNER_RADIUS = 4;
 
-// Rounded top corners, square baseline — never a fully-rounded rect.
+// Rounded top corners, square baseline: never a fully-rounded rect.
 function topRoundedBarPath(x: number, y: number, width: number, height: number, radius: number): string {
   const r = Math.min(radius, width / 2, height);
   return `M${x},${y + height} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + width - r},${y} Q${

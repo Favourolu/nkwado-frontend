@@ -203,7 +203,7 @@ export default function VendorInquiriesPage() {
             <DialogTitle>Submit a quote</DialogTitle>
             <DialogDescription>
               {quotingInquiry &&
-                `${EVENT_TYPE_LABELS[quotingInquiry.eventType] ?? quotingInquiry.eventType} — ${
+                `${EVENT_TYPE_LABELS[quotingInquiry.eventType] ?? quotingInquiry.eventType}, ${
                   quotingInquiry.guestCount ?? "?"
                 } guests`}
             </DialogDescription>

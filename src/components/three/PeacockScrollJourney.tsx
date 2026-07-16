@@ -202,7 +202,7 @@ export function PeacockScrollJourney() {
             One by one, the right vendors join your display
           </h2>
           <p className="mx-auto mt-3 max-w-md text-muted-foreground">
-            Caterers, venues, DJs, photographers — every feather a vetted vendor, matched to
+            Caterers, venues, DJs, photographers: every feather a vetted vendor, matched to
             your event.
           </p>
         </div>

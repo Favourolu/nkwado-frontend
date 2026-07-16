@@ -29,7 +29,7 @@ export interface VendorDetails {
   services?: string[];
   rating?: number | null;
   reviewCount?: number | null;
-  // Photo URLs are short-lived (expire ~15 min) — fetch fresh via this
+  // Photo URLs are short-lived (expire ~15 min); fetch fresh via this
   // endpoint whenever they need to be shown, never cache/persist them.
   photos?: string[];
 }
