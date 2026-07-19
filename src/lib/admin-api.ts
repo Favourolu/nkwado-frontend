@@ -19,6 +19,46 @@ export async function getPendingVendors() {
   return data.vendors;
 }
 
+export interface AdminVendor {
+  id: string;
+  businessName: string;
+  businessType?: string | null;
+  category: VendorCategory;
+  status: VendorStatus;
+  location?: string | null;
+  phoneNumber?: string | null;
+  priceRange?: string | null;
+  contactName: string;
+  contactEmail: string;
+  rating: number | null;
+  reviewCount: number;
+  verifiedAt?: string | null;
+  createdAt: string;
+}
+
+export interface AdminVendorsPagination {
+  total: number;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+}
+
+export interface AdminVendorFilters {
+  status?: VendorStatus;
+  category?: VendorCategory;
+  limit?: number;
+  offset?: number;
+}
+
+/** Every vendor on the app regardless of vetting status - not just the pending-review queue. */
+export async function getAllVendors(filters: AdminVendorFilters = {}) {
+  const { data } = await apiClient.get<{ vendors: AdminVendor[]; pagination: AdminVendorsPagination }>(
+    "/admin/vendors",
+    { params: filters }
+  );
+  return data;
+}
+
 export async function approveVendor(vendorId: string) {
   const { data } = await apiClient.post<{ vendor: PendingVendor }>(
     `/admin/vendors/${vendorId}/approve`
